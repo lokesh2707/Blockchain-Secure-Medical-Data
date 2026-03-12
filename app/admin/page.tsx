@@ -107,7 +107,7 @@ export default function AdminPage() {
             setIsDialogOpen(false);
             resetForm();
             fetchUsers();
-        } catch (err) {
+        } catch (err: any) {
             alert('Error saving user: ' + err.message);
         }
     };

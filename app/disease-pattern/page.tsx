@@ -12,7 +12,7 @@ import { Loader2, AlertCircle, FileText, CheckCircle } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function DiseasePatternPage() {
-    const { user, token } = useAuth()
+    const { user } = useAuth()
     const [file, setFile] = useState<File | null>(null)
     const [records, setRecords] = useState<any[]>([])
     const [selectedRecordId, setSelectedRecordId] = useState<string>("")
@@ -21,13 +21,14 @@ export default function DiseasePatternPage() {
     const [analysis, setAnalysis] = useState<any | null>(null)
 
     useEffect(() => {
-        if (user && token) {
+        if (user) {
             fetchRecords()
         }
-    }, [user, token])
+    }, [user])
 
     const fetchRecords = async () => {
         try {
+            const token = localStorage.getItem('auth_token');
             const res = await fetch("http://localhost:5001/records/my-records", {
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -57,6 +58,7 @@ export default function DiseasePatternPage() {
         }
 
         try {
+            const token = localStorage.getItem('auth_token');
             const res = await fetch("http://localhost:5001/analyze/disease-pattern", {
                 method: "POST",
                 headers: {
