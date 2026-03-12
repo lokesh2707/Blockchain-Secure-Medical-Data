@@ -1,0 +1,92 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "1. Hardhat Blockchain",
+            "type": "shell",
+            "command": "npx hardhat node",
+            "options": {
+                "cwd": "${workspaceFolder}/backend/blockchain"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "services"
+            }
+        },
+        {
+            "label": "2. Deploy Contracts",
+            "type": "shell",
+            "command": "sleep 5 && npx hardhat run scripts/deploy.js --network localhost",
+            "options": {
+                "cwd": "${workspaceFolder}/backend/blockchain"
+            },
+            "isBackground": false,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "services"
+            }
+        },
+        {
+            "label": "3. Backend (Node.js)",
+            "type": "shell",
+            "command": "npm start",
+            "options": {
+                "cwd": "${workspaceFolder}/backend"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "services"
+            }
+        },
+        {
+            "label": "4. Frontend (Next.js)",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "services"
+            }
+        },
+        {
+            "label": "Start All Services",
+            "dependsOn": [
+                "1. Hardhat Blockchain",
+                "2. Deploy Contracts",
+                "3. Backend (Node.js)",
+                "4. Frontend (Next.js)"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+        {
+            "label": "Install Dependencies",
+            "type": "shell",
+            "command": "cd backend/blockchain && npm install && cd ../.. && cd backend && npm install && cd .. && npm install",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        }
+    ]
+}
