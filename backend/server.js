@@ -121,12 +121,41 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage })
 
+import { ethers } from "ethers";
+
+const contractPath = path.join(process.cwd(), "MedicalDataLedger.json");
+const contractJSON = JSON.parse(fs.readFileSync(contractPath, "utf-8"));
+
+// Blockchain Setup
+const CONTRACT_ADDRESS = "0xA45de44290e354783FEF3566Ba091702154A36Ee";
+const ALCHEMY_URL = process.env.ALCHEMY_URL;
+const PRIVATE_KEY = process.env.METAMASK_PRIVATE_KEY;
+
+let contract;
+if (ALCHEMY_URL && PRIVATE_KEY) {
+  const provider = new ethers.JsonRpcProvider(ALCHEMY_URL);
+  const signer = new ethers.Wallet(PRIVATE_KEY, provider);
+  contract = new ethers.Contract(CONTRACT_ADDRESS, contractJSON.abi, signer);
+} else {
+  console.error("Missing Alchemy URL or Private Key in .env. Blockchain interactions will fail.");
+}
+
 const createBlock = async (data) => {
+  const dataHash = crypto.createHash("sha256").update(data).digest("hex");
+  
+  try {
+    const tx = await contract.addMedicalRecord(dataHash);
+    console.log(`⏳ Waiting for transaction ${tx.hash} to be mined on Ethereum Sepolia...`);
+    const receipt = await tx.wait();
+    console.log(`✅ Transaction confirmed in block ${receipt.blockNumber}`);
+  } catch (err) {
+    console.error("❌ Blockchain Transaction Failed:", err);
+    throw new Error("Failed to deploy medical record to Ethereum Sepolia blockchain.");
+  }
+
+  // Also keep our local MongoDB index copy running for UI speed
   const lastBlock = await Block.findOne().sort({ timestamp: -1 })
   const previousHash = lastBlock ? lastBlock.dataHash : "0".repeat(64) // Genesis hash
-  const dataHash = crypto.createHash("sha256").update(data).digest("hex")
-
-  // Calculate verified ID
   const newId = lastBlock ? lastBlock.id + 1 : 1
 
   await Block.create({
@@ -134,7 +163,7 @@ const createBlock = async (data) => {
     previousHash,
     dataHash,
     timestamp: new Date(),
-    recordCount: 1, // Simplified: 1 block per record for this demo
+    recordCount: 1, 
     verified: true
   })
   return dataHash

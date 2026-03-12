@@ -1,0 +1,41 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "C:\\Users\\lokes\\OneDrive\\Desktop\\4-2 Project\\blockchain-secure-medical-data\\blockchain-secure-medical-data\\backend\\blockchain\\contracts\\MedicalDataLedger.sol": {
+      "lastModificationDate": 1773031887945,
+      "contentHash": "58e05b6197afee21d0fa55b287448b7b",
+      "sourceName": "contracts/MedicalDataLedger.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "MedicalDataLedger"
+      ]
+    }
+  }
+}
