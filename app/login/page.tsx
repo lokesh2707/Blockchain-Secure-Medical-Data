@@ -124,11 +124,11 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* <div className="mt-4 text-center text-xs text-muted-foreground">
-              <Link href="#" className="hover:underline">
+            <div className="mt-4 text-center text-xs text-muted-foreground">
+              <Link href="/forgot-password" className="hover:underline">
                 Forgot your password?
               </Link>
-            </div> */}
+            </div>
           </CardContent>
         </Card>
       </div>

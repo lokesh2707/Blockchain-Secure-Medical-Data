@@ -43,6 +43,7 @@ const UserSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   password: String,
+  recoveryKeyword: String,
   role: String
 })
 
@@ -171,11 +172,12 @@ const createBlock = async (data) => {
 
 app.post("/auth/register", async (req, res) => {
   try {
-    const { name, email, password, role } = req.body
+    const { name, email, password, role, recoveryKeyword } = req.body
     if (await User.findOne({ email })) return res.status(400).json({ error: "Email already exists" })
 
     const hashed = await bcrypt.hash(password, 10)
-    const user = await User.create({ name, email, password: hashed, role })
+    const hashedKeyword = recoveryKeyword ? await bcrypt.hash(recoveryKeyword, 10) : undefined
+    const user = await User.create({ name, email, password: hashed, role, recoveryKeyword: hashedKeyword })
     const token = jwt.sign({ id: user._id, role: user.role, name: user.name }, process.env.JWT_SECRET)
     res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } })
   } catch (err) {
@@ -192,6 +194,29 @@ app.post("/auth/login", async (req, res) => {
     if (!ok) return res.sendStatus(401)
     const token = jwt.sign({ id: user._id, role: user.role, name: user.name }, process.env.JWT_SECRET)
     res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.post("/auth/reset-password", async (req, res) => {
+  try {
+    const { email, recoveryKeyword, newPassword } = req.body
+    if (!email || !recoveryKeyword || !newPassword) return res.status(400).json({ error: "Email, recovery keyword, and new password are required" })
+    
+    const user = await User.findOne({ email })
+    if (!user) return res.status(404).json({ error: "User not found" })
+    
+    if (!user.recoveryKeyword) return res.status(400).json({ error: "This account was not set up with a recovery keyword. Please contact support." })
+    
+    const ok = await bcrypt.compare(recoveryKeyword, user.recoveryKeyword)
+    if (!ok) return res.status(400).json({ error: "Invalid recovery keyword" })
+    
+    const hashed = await bcrypt.hash(newPassword, 10)
+    user.password = hashed
+    await user.save()
+    
+    res.json({ message: "Password updated successfully" })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
@@ -843,7 +868,7 @@ app.get("/research/datasets", auth, async (req, res) => {
       title: d.title,
       category: d.category,
       recordCount: 1, // Single record per analysis for now
-      dateRange: new Date(d.timestamp).getFullYear().toString(),
+      dateRange: new Date(d.timestamp).toLocaleString(),
       status: 'available',
       verified: d.verified ? 1 : 0,
       summary: d.summary,

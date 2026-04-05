@@ -25,6 +25,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [recoveryKeyword, setRecoveryKeyword] = useState('');
   const [role, setRole] = useState<string>('patient');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -37,7 +38,7 @@ export default function RegisterPage() {
     setError('');
 
     // Validation
-    if (!name || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword || !recoveryKeyword) {
       setError('Please fill in all fields');
       return;
     }
@@ -55,7 +56,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      await register(name, email, password, role);
+      await register(name, email, password, role, recoveryKeyword);
       setSuccess(true);
       setTimeout(() => {
         router.push('/dashboard');
@@ -151,6 +152,20 @@ export default function RegisterPage() {
                   required
                   disabled={isLoading}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="recoveryKeyword">Recovery Keyword (Important for Reset)</Label>
+                <Input
+                  id="recoveryKeyword"
+                  type="text"
+                  placeholder="e.g. Satoshi123"
+                  value={recoveryKeyword}
+                  onChange={(e) => setRecoveryKeyword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
+                <p className="text-xs text-muted-foreground">Keep this very safe!</p>
               </div>
 
               <div className="space-y-2">
