@@ -1,9 +1,9 @@
-'use client';
-
-import React, { Suspense } from 'react';
+import React from 'react';
 import Link from 'next/link';
 
-function ResetPasswordFallback() {
+export const dynamic = 'force-static';
+
+export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md text-center">
@@ -14,13 +14,5 @@ function ResetPasswordFallback() {
         </Link>
       </div>
     </div>
-  );
-}
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ResetPasswordFallback />
-    </Suspense>
   );
 }
